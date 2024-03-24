@@ -1,3 +1,5 @@
+_Copyright 12/04/2015 Quan Zhou, advised by Yongtao Guan, Baylor College of Medicine_
+
 This program calculates the p-value of a weighted sum of chi-squared varibles with d.f. = 1.
 The algorithm was first described by Bausch. 
 
