@@ -1,0 +1,143 @@
+\documentclass[11pt, Palatino]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx,color}
+\usepackage{bm}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+%\usepackage{natbib}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{lineno}
+\usepackage{multirow}
+
+%\onehalfspacing
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-.5in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.3in}%
+\addtolength{\topmargin}{-.8in}%
+ 
+
+\def\bach{{\sc Bach}~}
+\def\tcr{\textcolor{red}}
+
+\begin{document}
+
+\begin{center}
+{\huge User Manual for \bach} \\
+\vspace{0.5cm}
+{\large Quan Zhou (zhouquan.stat@gmail.com) and Yongtao Guan} \\
+\vspace{0.2cm}
+{\large Last update: 7 Dec 2015} \\
+\end{center}
+
+\bach implements Bausch's algorithm to evaluate the distribution function of a weighted sum of $\chi_1^2$ random variables~\cite{bausch2013efficient}; one important application is to compute the p-values associated with the Bayes factors~\cite{quan.guan.2015}.  There are two ways to run \bach: simple or in batch. 
+Note in the following example, we use ``./bach" as the program name; in the bach folder  there are ``bach-mac" (bach for Mac OS X) and ``bach-linux" (bach for Linux). You may either rename the executable or modifiy the command lines below.  
+ 
+\section{Simple run}
+Denoted by $\chi_1^2$ a chi-squared random variable (r.v.) with $1$ degree of freedom (d.f).  Let
+$Y =  X_1 + 0.8 X_2 + 0.6 X_3 + 0.4 X_4,$
+where $X_i\sim \chi_1^2$ independently. 
+To compute $P(Y > 10),$ the command line is: 
+\begin{verbatim}
+	./bach 1 0.8 0.6 0.4 10
+\end{verbatim}
+A p-value will be printed to the screen:
+\begin{verbatim}
+	0.00914343 
+\end{verbatim} 
+\textbf{Rules of input:} Numbers are separated by space; the last number is the statistic and the other numbers are coefficients. 
+
+\medskip
+Suppose we also want to compute $P(Y>20)$. Of course we may repeat the above command line, substituting $10$ with $20.$ 
+But a more efficient way is to compute $P(Y>20)$ and $P(Y>10)$ simultaneously because we can reuse the distribution functions.  
+The command line is: 
+\begin{verbatim}
+	./bach 1 0.8 0.6 0.4 10,20
+\end{verbatim}
+Two p-values will be printed to the screen:
+\begin{verbatim}
+	0.00914343  4.31004e-5
+\end{verbatim} 
+\textbf{Rules of input:} If we want to compute multiple p-values for the same coefficients, just append more test statistics in the end using `,' as the delimiter. 
+ 
+\section{Batch run}
+Suppose $Z =  5 X_5 + 0.2 X_6,$ where $X_i \sim \chi_1^2$. 
+If we want to compute $P(Z>34)$, $P(Y > 10)$ and $P(Y>20)$ simultaneously in batch mode, we can create the following file (named ``text.input"): 
+\begin{verbatim}
+	1 0.8 0.6 0.4 10,20
+	5 0.2 34
+\end{verbatim}
+Each row in the input file is what you would type using command line save the ``./bach". To run \bach in batch mode: 
+\begin{verbatim}
+	./bach -i test.input
+\end{verbatim}
+Three p-values will then be printed on the screen:
+\begin{verbatim}
+	0.00914343 4.31004e-5
+	0.00932733
+\end{verbatim}
+Within each row, multiple p-values are delimited by a tab ({`\textbackslash{t}');  each row in the output corresponds to the same row in the input file.   
+  
+\section{Output file}  
+When `-o' argument is invoked for batch mode, an output file will be generated. 
+\begin{verbatim}
+	./bach -i test.input -o test.output
+\end{verbatim}
+This command will produce a `test.output' which reads
+\begin{center}
+{
+\begin{tabular}{c c c c}
+p-value &	error-bound & coeffcients & statistic \\
+\hline
+0.00914343	& 	3.02826e-15 & 0.4 0.6 0.8 1 & 10 \\
+4.31004e-05 &	5.37358e-11 & 0.4 0.6 0.8 1 & 20 \\
+0.00932733	& 3.55176e-08 & 0.2  5 & 34\\
+\end{tabular} 
+}
+\end{center} 
+The output file contains 4 columns: (1) p-value; (2) the upper bound of the absolute error; (3) coefficients of the $\chi_1^2$ variables; (4) the value of the statistic. 
+The delimiter between fields is the tab, and within the field of ``coefficients" the delimiter is the blank space.  
+ 
+\section{Options}
+\begin{flushleft}
+\begin{itemize}
+\item -i [string=]: the input filename. This is required for batch mode. 
+\item -o [string=]: the output filename for the batch mode. 
+\item -c [int=6]: the precision of all output (number of significant digits, default is 6).
+\item -h : stop the program and print the HELP.
+\end{itemize}  
+\medskip
+There are additional options to control error bounds, some of which concern GMP library used in our implementation; one may send an email to inquire if on the off chance one is interested.  
+\end{flushleft}
+
+
+%\bibliographystyle{unsrt}
+%\bibliography{/Users/yongtaog/Dropbox/Shared/quan/chi_square_code/doc/bf_ref}
+\begin{thebibliography}{1}
+
+\bibitem{bausch2013efficient}
+Johannes Bausch.
+\newblock On the efficient calculation of a linear combination of chi-square
+  random variables with an application in counting string vacua.
+\newblock {\em Journal of Physics A: Mathematical and Theoretical},
+  46(50):505202, 2013.
+
+\bibitem{quan.guan.2015}
+Quan Zhou and Yongtao Guan.
+\newblock On the null distribution of Bayes factors in linear regressin.
+\newblock {\em JASA (Theory and Methods)}, 113(523): 1362 -- 1371, 2018.  
+
+\end{thebibliography}
+
+
+\end{document}
+
+ 
+
+
+
+ 

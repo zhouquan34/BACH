@@ -1,0 +1,20 @@
+## When you need install yourself ##
+If 'bach-linux' and 'bach-mac' cannot work on your system, you might have to install yourself.
+
+'bach-linux' and 'bach-mac' have GMP library statically linked and were compiled on old computers. Hence they should work on most Linux or MAC systems.
+
+## Install GMP ##
+First, you need install GMP library. You can download from gmplib.org.
+
+BE SURE to include '--enable-cxx' argument when you type './configure'. Otherwise the C++ interface of GMP will not be installed and the compilation of our code will fail.
+
+## Install bach ##
+Type 'make' to compile bach. 
+
+Note that you may need to specify the 'include' and 'lib' paths of GMP. Open the Makefile and you should see how to add them. It should look like 
+
+	INC = -I/usr/local/include
+	LIB = -L/usr/local/lib
+
+Lastly, move 'bach' to a directory in the PATH variable so that you can use it by typing 'bach' anywhere. 
+
